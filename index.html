@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GradePilot — COMSATS Marks Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="app">
+
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect width="32" height="32" rx="8" fill="rgba(128,101,247,0.15)"/>
+      <path d="M16 7L28 13L16 19L4 13L16 7Z" fill="#A48BFF" stroke="#8065F7" stroke-width="1.2" stroke-linejoin="round"/>
+      <path d="M4 13V21" stroke="#8065F7" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M10 16.5V22C10 22 12.5 24.5 16 24.5C19.5 24.5 22 22 22 22V16.5" stroke="#A48BFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>
+      <span class="sidebar-logo-name">GradePilot</span>
+      <span class="sidebar-logo-tag">Calculate smarter. Plan better.</span>
+    </span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <span class="nav-section-label">Menu</span>
+
+    <a class="nav-link active" data-view="view-overview" onclick="navigateTo('view-overview')">
+      <span class="nav-link-icon">🏠</span> Overview
+    </a>
+    <a class="nav-link" data-view="view-nonlab" onclick="navigateTo('view-nonlab', function(){ setSection('nonlab'); })">
+      <span class="nav-link-icon">📘</span> Non-Lab Calculator
+    </a>
+    <a class="nav-link" data-view="view-lab" onclick="navigateTo('view-lab', function(){ setSection('lab'); })">
+      <span class="nav-link-icon">🔬</span> Lab Subject
+    </a>
+    <a class="nav-link" data-view="view-nonlab-target" onclick="navigateTo('view-nonlab', function(){ setSection('nonlab'); setNLMode('target'); })">
+      <span class="nav-link-icon">🎯</span> Target Marks
+    </a>
+    <a class="nav-link" data-view="view-history" onclick="navigateTo('view-history')">
+      <span class="nav-link-icon">📋</span> History
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="sidebar-footer-campus">COMSATS Wah Campus</div>
+    <div class="sidebar-footer-version">GradePilot v2.0</div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN WRAP ═══ -->
+<div class="main-wrap">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="hamburger" onclick="toggleSidebar()" aria-label="Menu">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M2 5h16M2 10h16M2 15h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+      <span id="page-title">Overview</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-subject">
+        <label for="subjectName">Subject</label>
+        <input type="text" id="subjectName" class="marks-input" style="width:180px;padding:6px 12px;font-size:13px;" placeholder="e.g. Artificial Intelligence">
+      </div>
+      <div class="avatar">GP</div>
+    </div>
+  </header>
+
+  <!-- Content -->
+  <main class="content" id="main-content">
+
+    <!-- Error banner (shared) -->
+    <div class="error-msg" id="errorMsg"></div>
+
+    <!-- ═══ VIEW: OVERVIEW ═══ -->
+    <section class="view" id="view-overview">
+      <div class="bento-grid">
+
+        <!-- Welcome -->
+        <div class="bento-welcome">
+          <div class="welcome-text">
+            <h1>Welcome to GradePilot</h1>
+            <p>Track your academic performance and plan your next result with precision.</p>
+          </div>
+          <span class="welcome-badge">COMSATS Wah Campus</span>
+        </div>
+
+        <!-- Non-Lab Card -->
+        <div class="bento-card">
+          <div class="bento-card-icon theory">📘</div>
+          <div class="bento-card-title">Non-Lab Calculator</div>
+          <div class="bento-card-desc">
+            For theory-only subjects. Covers quizzes, assignments, midterm, and final exam with COMSATS fixed weightages.
+          </div>
+          <span class="bento-card-badge">100% Theory</span>
+          <button class="bento-open-btn" onclick="navigateTo('view-nonlab', function(){ setSection('nonlab'); })">Open Calculator →</button>
+        </div>
+
+        <!-- Lab Card -->
+        <div class="bento-card">
+          <div class="bento-card-icon lab">🔬</div>
+          <div class="bento-card-title">Lab Subject Calculator</div>
+          <div class="bento-card-desc">
+            For subjects with a lab component. Theory contributes 67% and lab contributes 33% of your overall grade.
+          </div>
+          <span class="bento-card-badge" style="background:rgba(128,101,247,0.1);border-color:rgba(128,101,247,0.2);color:var(--accent-lt);">67% + 33%</span>
+          <button class="bento-open-btn" style="background:rgba(53,201,154,0.1);color:var(--success);border-color:rgba(53,201,154,0.25);" onclick="navigateTo('view-lab', function(){ setSection('lab'); })">Open Calculator →</button>
+        </div>
+
+        <!-- Weight Reference -->
+        <div class="info-card">
+          <div class="info-card-title">Fixed Weightages</div>
+          <ul class="weight-list">
+            <li><span>Quizzes</span>     <span class="weight-pill-sm">15%</span></li>
+            <li><span>Assignments</span> <span class="weight-pill-sm">10%</span></li>
+            <li><span>Midterm</span>     <span class="weight-pill-sm">25%</span></li>
+            <li><span>Final Exam</span>  <span class="weight-pill-sm">50%</span></li>
+          </ul>
+        </div>
+
+        <!-- Grade Scale -->
+        <div class="info-card">
+          <div class="info-card-title">Grade Scale</div>
+          <ul class="grade-list">
+            <li><span class="grade-dot" style="background:var(--success)"></span> A &nbsp;≥ 85%</li>
+            <li><span class="grade-dot" style="background:var(--accent-lt)"></span> B+ ≥ 80%</li>
+            <li><span class="grade-dot" style="background:var(--accent-lt)"></span> B &nbsp;≥ 75%</li>
+            <li><span class="grade-dot" style="background:var(--warning)"></span> C+ ≥ 70%</li>
+            <li><span class="grade-dot" style="background:var(--warning)"></span> C &nbsp;≥ 65%</li>
+            <li><span class="grade-dot" style="background:#E8873A"></span> D+ ≥ 60%</li>
+            <li><span class="grade-dot" style="background:#E8873A"></span> D &nbsp;≥ 55%</li>
+            <li><span class="grade-dot" style="background:var(--danger)"></span> F &nbsp;&lt; 55%</li>
+          </ul>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══ VIEW: NON-LAB ═══ -->
+    <section class="view" id="view-nonlab" style="display:none">
+      <section id="sec-nonlab">
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="nl-tab-mid"    onclick="setNLMode('mid')">Midterm</button>
+          <button class="mode-tab"        id="nl-tab-final"  onclick="setNLMode('final')">Final Overall</button>
+          <button class="mode-tab"        id="nl-tab-target" onclick="setNLMode('target')">Target Marks</button>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title"><span class="card-icon theory-icon">T</span>Theory Assessment</div>
+            <span class="weight-badge theory-badge">100% of Subject</span>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Quizzes</span>
+              <span class="comp-pill">15% of Theory</span>
+            </div>
+            <div id="nl-quizRows"></div>
+            <button class="add-btn" onclick="addRow('nlQuiz')"><span class="plus-icon">+</span> Add Quiz</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Assignments</span>
+              <span class="comp-pill">10% of Theory</span>
+            </div>
+            <div id="nl-assignRows"></div>
+            <button class="add-btn" onclick="addRow('nlAssign')"><span class="plus-icon">+</span> Add Assignment</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Midterm Exam</span>
+              <span class="comp-pill">25% of Theory</span>
+            </div>
+            <div class="single-row">
+              <input type="number" id="nl-midObt"   class="marks-input" placeholder="Obtained" min="0"    step="any">
+              <span class="slash">/</span>
+              <input type="number" id="nl-midTotal" class="marks-input" placeholder="Total"    min="0.01" step="any" value="25">
+            </div>
+          </div>
+
+          <div class="component" id="nl-finalComp" style="display:none">
+            <div class="comp-head">
+              <span class="comp-title" id="nl-finalTitle">Final Exam</span>
+              <span class="comp-pill">50% of Theory</span>
+            </div>
+            <div class="single-row">
+              <span id="nl-finalObtWrap" style="display:contents">
+                <input type="number" id="nl-finalObt" class="marks-input" placeholder="Obtained" min="0" step="any">
+                <span class="slash">/</span>
+              </span>
+              <input type="number" id="nl-finalTotal" class="marks-input" placeholder="Total" min="0.01" step="any" value="50">
+            </div>
+          </div>
+        </div>
+
+        <div class="target-card" id="nl-targetCard" style="display:none">
+          <div class="card-head">
+            <div class="card-title">Required Marks Calculator</div>
+          </div>
+          <div class="target-field">
+            <span class="comp-title">Your Target Score</span>
+            <span class="comp-pill">out of 100</span>
+          </div>
+          <div class="single-row" style="margin-top:10px">
+            <input type="number" id="nl-target" class="marks-input marks-input-lg"
+              placeholder="e.g. 80" min="0" max="100" step="any">
+            <span class="slash-txt">/ 100</span>
+          </div>
+        </div>
+
+        <button class="calc-btn" id="nl-calcBtn" onclick="calcNonLab()">Calculate</button>
+        <div class="result-card" id="nl-result" style="display:none"></div>
+      </section>
+    </section>
+
+    <!-- ═══ VIEW: LAB ═══ -->
+    <section class="view" id="view-lab" style="display:none">
+      <section id="sec-lab">
+        <div class="lab-header-badges">
+          <span class="lab-header-badge theory">📘 Theory Component · 67%</span>
+          <span class="lab-header-badge lab">🔬 Lab Component · 33%</span>
+        </div>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="lab-tab-mid"    onclick="setLabMode('mid')">Midterm</button>
+          <button class="mode-tab"        id="lab-tab-final"  onclick="setLabMode('final')">Final Overall</button>
+          <button class="mode-tab"        id="lab-tab-target" onclick="setLabMode('target')">Target Marks</button>
+        </div>
+
+        <!-- Theory Card -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head">
+            <div class="card-title"><span class="card-icon theory-icon">T</span>Theory Component</div>
+            <span class="weight-badge theory-badge">67% of Subject</span>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Theory Quizzes</span>
+              <span class="comp-pill">15% of Theory</span>
+            </div>
+            <div id="lab-tQuizRows"></div>
+            <button class="add-btn" onclick="addRow('tQuiz')"><span class="plus-icon">+</span> Add Theory Quiz</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Theory Assignments</span>
+              <span class="comp-pill">10% of Theory</span>
+            </div>
+            <div id="lab-tAssignRows"></div>
+            <button class="add-btn" onclick="addRow('tAssign')"><span class="plus-icon">+</span> Add Theory Assignment</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Theory Midterm</span>
+              <span class="comp-pill">25% of Theory</span>
+            </div>
+            <div class="single-row">
+              <input type="number" id="lab-tMidObt"   class="marks-input" placeholder="Obtained" min="0"    step="any">
+              <span class="slash">/</span>
+              <input type="number" id="lab-tMidTotal" class="marks-input" placeholder="Total"    min="0.01" step="any" value="25">
+            </div>
+          </div>
+
+          <div class="component" id="lab-tFinalComp" style="display:none">
+            <div class="comp-head">
+              <span class="comp-title">Theory Final Exam</span>
+              <span class="comp-pill">50% of Theory</span>
+            </div>
+            <div class="single-row">
+              <input type="number" id="lab-tFinalObt"   class="marks-input" placeholder="Obtained" min="0"    step="any">
+              <span class="slash">/</span>
+              <input type="number" id="lab-tFinalTotal" class="marks-input" placeholder="Total"    min="0.01" step="any" value="50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Lab Card -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-head">
+            <div class="card-title"><span class="card-icon lab-icon">L</span>Lab Component</div>
+            <span class="weight-badge lab-badge">33% of Subject</span>
+          </div>
+          <p class="lab-note">All lab marks are pooled — total obtained ÷ total available × 100</p>
+
+          <div class="component">
+            <div class="comp-head"><span class="comp-title">Lab Assignments</span></div>
+            <div id="lab-labAssignRows"></div>
+            <button class="add-btn lab-add-btn" onclick="addRow('labAssign')"><span class="plus-icon">+</span> Add Lab Assignment</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Lab Quizzes <span class="opt">(optional)</span></span>
+            </div>
+            <div id="lab-labQuizRows"></div>
+            <button class="add-btn lab-add-btn" onclick="addRow('labQuiz')"><span class="plus-icon">+</span> Add Lab Quiz</button>
+          </div>
+
+          <div class="component">
+            <div class="comp-head"><span class="comp-title">Lab Midterm</span></div>
+            <div class="single-row">
+              <input type="number" id="lab-labMidObt"   class="marks-input" placeholder="Obtained" min="0"    step="any">
+              <span class="slash">/</span>
+              <input type="number" id="lab-labMidTotal" class="marks-input" placeholder="Total"    min="0.01" step="any" value="25">
+            </div>
+          </div>
+
+          <div class="component" id="lab-labFinalComp" style="display:none">
+            <div class="comp-head"><span class="comp-title">Lab Final Exam</span></div>
+            <div class="single-row">
+              <input type="number" id="lab-labFinalObt"   class="marks-input" placeholder="Obtained" min="0"    step="any">
+              <span class="slash">/</span>
+              <input type="number" id="lab-labFinalTotal" class="marks-input" placeholder="Total"    min="0.01" step="any" value="50">
+            </div>
+          </div>
+        </div>
+
+        <!-- Lab Target Card -->
+        <div class="target-card" id="lab-targetCard" style="display:none">
+          <div class="card-head">
+            <div class="card-title">Required Marks Calculator</div>
+          </div>
+
+          <div class="target-field">
+            <span class="comp-title">Your Target Score</span>
+            <span class="comp-pill">out of 100</span>
+          </div>
+          <div class="single-row" style="margin-top:10px; margin-bottom:18px">
+            <input type="number" id="lab-target" class="marks-input marks-input-lg"
+              placeholder="e.g. 80" min="0" max="100" step="any">
+            <span class="slash-txt">/ 100</span>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Theory Final Exam Total</span>
+              <span class="comp-pill">for Option A</span>
+            </div>
+            <div class="single-row">
+              <input type="number" id="lab-tgt-tFinalTotal" class="marks-input" placeholder="Total" min="0.01" step="any" value="50">
+              <span class="slash-txt">total marks</span>
+            </div>
+          </div>
+
+          <div class="component">
+            <div class="comp-head">
+              <span class="comp-title">Lab Final Exam Total</span>
+              <span class="comp-pill">for both options</span>
+            </div>
+            <div class="single-row">
+              <input type="number" id="lab-tgt-labFinalTotal" class="marks-input" placeholder="Total" min="0.01" step="any" value="50">
+              <span class="slash-txt">total marks</span>
+            </div>
+          </div>
+
+          <div class="target-opts">
+            <div class="target-opt-box">
+              <div class="target-opt-label">Option A — Enter expected Lab Final %, get Required Theory Final marks</div>
+              <div class="single-row" style="margin:10px 0">
+                <input type="number" id="lab-expLabPct" class="marks-input"
+                  placeholder="Expected Lab Final %" min="0" max="100" step="any">
+                <span class="slash-txt">%</span>
+              </div>
+              <button class="calc-btn-sm btn-theory" onclick="calcLabTarget('theory')">Get Required Theory Final</button>
+            </div>
+            <div class="target-or">— or —</div>
+            <div class="target-opt-box">
+              <div class="target-opt-label">Option B — Enter expected Theory Final marks, get Required Lab Final %</div>
+              <div class="single-row" style="margin:10px 0">
+                <input type="number" id="lab-expTFinalObt"   class="marks-input" placeholder="Theory Final (Obtained)" min="0"    step="any">
+                <span class="slash">/</span>
+                <input type="number" id="lab-expTFinalTotal" class="marks-input" placeholder="Total"                   min="0.01" step="any" value="50">
+              </div>
+              <button class="calc-btn-sm btn-lab" onclick="calcLabTarget('lab')">Get Required Lab Final %</button>
+            </div>
+          </div>
+
+          <div class="result-card" id="lab-tgt-result" style="display:none"></div>
+        </div>
+
+        <button class="calc-btn" id="lab-calcBtn" onclick="calcLab()">Calculate</button>
+        <div class="result-card" id="lab-result" style="display:none"></div>
+      </section>
+    </section>
+
+    <!-- ═══ VIEW: HISTORY ═══ -->
+    <section class="view" id="view-history" style="display:none">
+      <div class="history-topbar">
+        <div>
+          <h2 class="history-heading">Calculation History</h2>
+          <p class="history-sub">Your recent calculations, saved locally.</p>
+        </div>
+        <button class="clear-history-btn" onclick="clearHistory()">Clear All</button>
+      </div>
+      <div class="card" id="history-list"></div>
+    </section>
+
+    <!-- Hidden: old nav buttons kept for JS compatibility -->
+    <div style="display:none">
+      <button id="nav-nonlab"></button>
+      <button id="nav-lab"></button>
+    </div>
+
+  </main>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
