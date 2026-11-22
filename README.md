@@ -1,4 +1,4 @@
-# GradePilot
+# COMSATS CALCULATOR
 
 **Calculate smarter. Plan better.**
 
